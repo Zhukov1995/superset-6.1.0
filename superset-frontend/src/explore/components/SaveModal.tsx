@@ -132,13 +132,27 @@ class SaveModal extends Component<SaveModalProps, SaveModalState> {
     return typeof dashboard?.value === 'string';
   }
 
-  canOverwriteSlice(): boolean {
-    return (
-      (this.props.can_overwrite ||
-        isUserAdmin(this.props.user) ||
-        this.props.slice?.owners?.includes(this.props.user.userId)) &&
-      !this.props.slice?.is_managed_externally
+  isCurrentUserOwner(): boolean {
+    const userId = this.props.user?.userId;
+    if (userId === undefined) {
+      return false;
+    }
+    // Owners can arrive either as plain ids (number) or as objects depending on
+    // where the slice was hydrated from (bootstrap vs. SLICE_UPDATED reducer),
+    // so normalize to the numeric id before comparing.
+    return Boolean(
+      this.props.slice?.owners?.some((owner: number | { id?: number }) =>
+        typeof owner === 'number' ? owner === userId : owner?.id === userId,
+      ),
     );
+  }
+
+  canOverwriteSlice(): boolean {
+    const canEdit =
+      this.props.can_overwrite ||
+      isUserAdmin(this.props.user) ||
+      this.isCurrentUserOwner();
+    return canEdit && !this.props.slice?.is_managed_externally;
   }
 
   async componentDidMount() {
