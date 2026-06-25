@@ -78,7 +78,7 @@ import {
 } from 'src/database/actions';
 import Mousetrap from 'mousetrap';
 import { clearDatasetCache } from 'src/utils/cachedSupersetGet';
-import { makeUrl } from 'src/utils/pathUtils';
+import { makeUrl, supersetPrefix } from 'src/utils/pathUtils';
 import {
   OwnerSelectLabel,
   OWNER_TEXT_LABEL_PROP,
@@ -1576,7 +1576,8 @@ class DatasourceEditor extends PureComponent<
                 'Default URL to redirect to when accessing from the dataset list page. Accepts relative URLs such as',
               )}{' '}
               <Typography.Text code>
-                /superset/dashboard/{'{id}'}/
+                {`${supersetPrefix()}/dashboard/`}
+                {'{id}'}/
               </Typography.Text>
             </>
           }

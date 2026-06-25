@@ -25,6 +25,7 @@ import {
   createFetchRelated,
 } from 'src/views/CRUD/utils';
 import { useListViewResource, useFavoriteStatus } from 'src/views/CRUD/hooks';
+import { supersetPrefix } from 'src/utils/pathUtils';
 import {
   ConfirmStatusChange,
   Tooltip,
@@ -168,7 +169,9 @@ function TagList(props: TagListProps) {
           },
         }: any) => (
           <AntdTag>
-            <Link to={`/superset/all_entities/?id=${id}`}>{tagName}</Link>
+            <Link to={`${supersetPrefix()}/all_entities/?id=${id}`}>
+              {tagName}
+            </Link>
           </AntdTag>
         ),
         Header: t('Name'),

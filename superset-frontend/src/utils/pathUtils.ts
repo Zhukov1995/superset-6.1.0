@@ -16,7 +16,25 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import { FeatureFlag, isFeatureEnabled } from '@superset-ui/core';
 import { applicationRoot } from 'src/utils/getBootstrapData';
+
+/**
+ * Returns the legacy "/superset" path segment, or an empty string when the
+ * REMOVE_SUPERSET_URL_PREFIX feature flag is enabled.
+ *
+ * This is orthogonal to {@link applicationRoot} / {@link ensureAppRoot}, which
+ * handle the subdirectory deployment prefix. Use it when building paths that
+ * historically lived under "/superset/...":
+ *
+ *   // React Router path / link (subdir prefix added separately by the router):
+ *   `${supersetPrefix()}/welcome/`
+ *   // API call (subdir prefix added by makeUrl):
+ *   makeUrl(`${supersetPrefix()}/log/?explode=events`)
+ */
+export function supersetPrefix(): string {
+  return isFeatureEnabled(FeatureFlag.RemoveSupersetUrlPrefix) ? '' : '/superset';
+}
 
 /**
  * Matches safe URI schemes that should pass through without an application root

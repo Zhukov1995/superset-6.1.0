@@ -29,7 +29,7 @@ import {
   LOG_ACTIONS_SPA_NAVIGATION,
 } from '../logger/LogUtils';
 import DebouncedMessageQueue from '../utils/DebouncedMessageQueue';
-import { ensureAppRoot } from '../utils/pathUtils';
+import { ensureAppRoot, supersetPrefix } from '../utils/pathUtils';
 import type { DashboardInfo, DashboardLayoutState } from '../dashboard/types';
 import type { QueryEditor } from '../SqlLab/types';
 
@@ -88,14 +88,15 @@ interface LoggerStore {
   dispatch: Dispatch;
 }
 
-const LOG_ENDPOINT = '/superset/log/?explode=events';
+const getLogEndpoint = (): string =>
+  `${supersetPrefix()}/log/?explode=events`;
 
 const sendBeacon = (events: LogEventData[]): void => {
   if (events.length <= 0) {
     return;
   }
 
-  let endpoint = LOG_ENDPOINT;
+  let endpoint = getLogEndpoint();
   const [firstEvent] = events;
   const { source, source_id } = firstEvent;
   // backend logs treat these request params as first-class citizens

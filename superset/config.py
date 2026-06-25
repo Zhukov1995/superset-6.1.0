@@ -552,6 +552,11 @@ DEFAULT_FEATURE_FLAGS: dict[str, bool] = {
     # Enables Table V2 (AG Grid) viz plugin
     # @lifecycle: development
     "AG_GRID_TABLE_ENABLED": False,
+    # Removes the legacy "/superset/" prefix from user-facing URLs
+    # (e.g. "/superset/dashboard/1" becomes "/dashboard/1"). Old prefixed URLs
+    # keep working via redirects. Toggling requires a restart.
+    # @lifecycle: development
+    "REMOVE_SUPERSET_URL_PREFIX": False,
     # Enables experimental tabs UI for Alerts and Reports
     # @lifecycle: development
     "ALERT_REPORT_TABS": False,

@@ -19,6 +19,7 @@
 import { Dispatch } from 'redux';
 import { SupersetClient } from '@superset-ui/core';
 import { Datasource, RootState } from 'src/dashboard/types';
+import { supersetPrefix } from 'src/utils/pathUtils';
 
 // update datasources index for Dashboard
 export enum DatasourcesAction {
@@ -62,7 +63,7 @@ export function fetchDatasourceMetadata(key: string) {
     }
 
     return SupersetClient.get({
-      endpoint: `/superset/fetch_datasource_metadata?datasourceKey=${key}`,
+      endpoint: `${supersetPrefix()}/fetch_datasource_metadata?datasourceKey=${key}`,
     }).then(({ json }) => dispatch(setDatasource(json as Datasource, key)));
   };
 }

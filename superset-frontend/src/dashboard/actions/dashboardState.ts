@@ -60,6 +60,7 @@ import { logEvent } from 'src/logger/actions';
 import { LOG_ACTIONS_CONFIRM_OVERWRITE_DASHBOARD_METADATA } from 'src/logger/LogUtils';
 import { isEqual } from 'lodash';
 import { navigateWithState, navigateTo } from 'src/utils/navigationUtils';
+import { supersetPrefix } from 'src/utils/pathUtils';
 import type { AnyAction } from 'redux';
 import type { ThunkDispatch } from 'redux-thunk';
 import { ResourceStatus } from 'src/hooks/apiResources/apiResources';
@@ -539,7 +540,7 @@ export function saveDashboardRequest(
       );
       dispatch(saveDashboardFinished());
       navigateTo(
-        `/superset/dashboard/${(response.json as JsonObject).result?.id}/`,
+        `${supersetPrefix()}/dashboard/${(response.json as JsonObject).result?.id}/`,
       );
       dispatch(addSuccessToast(t('This dashboard was saved successfully.')));
       return response;
@@ -593,7 +594,7 @@ export function saveDashboardRequest(
       }
       dispatch(saveDashboardFinished());
       // redirect to the new slug or id
-      navigateWithState(`/superset/dashboard/${slug || id}/`, {
+      navigateWithState(`${supersetPrefix()}/dashboard/${slug || id}/`, {
         event: 'dashboard_properties_changed',
       });
 

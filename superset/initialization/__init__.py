@@ -429,6 +429,17 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         )
 
         #
+        # Optionally strip the legacy "/superset" prefix from view route_bases.
+        # Endpoint names are preserved, so url_for() and the redirect view below
+        # produce the short URLs automatically. Toggling requires a restart.
+        #
+        if feature_flag_manager.is_feature_enabled("REMOVE_SUPERSET_URL_PREFIX"):
+            Superset.route_base = ""
+            ExplorePermalinkView.route_base = ""
+            TagModelView.route_base = "/tags"
+            TaggedObjectsModelView.route_base = "/all_entities"
+
+        #
         # Setup views with no menu
         #
         appbuilder.add_view_no_menu(Api)
@@ -450,6 +461,39 @@ class SupersetAppInitializer:  # pylint: disable=too-many-public-methods
         appbuilder.add_view_no_menu(RedirectView)
         appbuilder.add_view_no_menu(RoleRestAPI)
         appbuilder.add_view_no_menu(UserInfoView)
+
+        #
+        # When the legacy prefix is removed, redirect old "/superset/..." URLs to
+        # their short equivalents so existing bookmarks and integrations keep
+        # working. GET requests use 301; non-GET use 308 to preserve method/body.
+        #
+        if feature_flag_manager.is_feature_enabled("REMOVE_SUPERSET_URL_PREFIX"):
+            # The deprecated Superset.explore / Superset.sqllab_history endpoints
+            # would now collide on the short paths already served by ExploreView
+            # and SqllabView. Drop the duplicate rules so the modern views win;
+            # the legacy /superset/... paths still reach them via the redirect
+            # below.
+            _superseded_endpoints = {
+                "Superset.explore",
+                "Superset.sqllab_history",
+            }
+            url_map = self.superset_app.url_map
+            for rule in list(url_map.iter_rules()):
+                if rule.endpoint in _superseded_endpoints:
+                    url_map._rules.remove(rule)
+                    url_map._rules_by_endpoint.get(rule.endpoint, []).remove(rule)
+            url_map.update()
+
+            @self.superset_app.before_request
+            def redirect_legacy_superset_prefix() -> FlaskResponse | None:
+                path = request.path
+                if not path.startswith("/superset/"):
+                    return None
+                short_path = path[len("/superset") :]
+                if request.query_string:
+                    short_path = f"{short_path}?{request.query_string.decode()}"
+                code = 301 if request.method == "GET" else 308
+                return redirect(short_path, code=code)
 
         #
         # Add links
