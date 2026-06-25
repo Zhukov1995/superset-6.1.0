@@ -369,6 +369,12 @@ LOGO_TOOLTIP = ""
 # Specify any text that should appear to the right of the logo
 LOGO_RIGHT_TEXT: Callable[[], str] | str = ""
 
+# Specify a default dashboard to use as the welcome/landing page for every user
+# who has not set a personal welcome dashboard (UserAttribute.welcome_dashboard_id).
+# Accepts a dashboard numeric id or slug. None keeps the default welcome page.
+# Per-user welcome dashboards always take precedence over this global default.
+WELCOME_DASHBOARD: int | str | None = None
+
 # Enables SWAGGER UI for superset openapi spec
 # ex: http://localhost:8080/swagger/v1
 FAB_API_SWAGGER_UI = True
