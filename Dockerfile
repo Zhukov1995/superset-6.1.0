@@ -232,6 +232,10 @@ RUN --mount=type=cache,target=${SUPERSET_HOME}/.cache/uv \
 # Install the superset package
 RUN --mount=type=cache,target=${SUPERSET_HOME}/.cache/uv \
     uv pip install -e .
+# ClickHouse database driver (baked into the production image).
+# Pin the version here for reproducible builds, e.g. clickhouse-connect==0.8.18
+RUN --mount=type=cache,target=${SUPERSET_HOME}/.cache/uv \
+    uv pip install clickhouse-connect
 RUN python -m compileall /app/superset
 
 USER superset
@@ -262,6 +266,9 @@ RUN --mount=type=cache,target=${SUPERSET_HOME}/.cache/uv \
     uv pip install -e .
 
 RUN uv pip install .[postgres]
+# ClickHouse database driver (kept in sync with the lean/production image).
+# Pin the version here for reproducible builds, e.g. clickhouse-connect==0.8.18
+RUN uv pip install clickhouse-connect
 RUN python -m compileall /app/superset
 
 USER superset
