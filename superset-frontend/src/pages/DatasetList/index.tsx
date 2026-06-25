@@ -53,6 +53,7 @@ import {
 } from 'src/components';
 import { Typography } from '@superset-ui/core/components/Typography';
 import handleResourceExport from 'src/utils/export';
+import { supersetPrefix } from 'src/utils/pathUtils';
 import SubMenu, { SubMenuProps, ButtonProps } from 'src/features/home/SubMenu';
 import Owner from 'src/types/Owner';
 import withToasts from 'src/components/MessageToasts/withToasts';
@@ -802,7 +803,7 @@ const DatasetList: FunctionComponent<DatasetListProps> = ({
                           avatar={<span>•</span>}
                           title={
                             <Typography.Link
-                              href={`/superset/dashboard/${result.id}`}
+                              href={`${supersetPrefix()}/dashboard/${result.id}`}
                               target="_atRiskItem"
                             >
                               {result.title}

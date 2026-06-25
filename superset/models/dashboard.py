@@ -197,12 +197,14 @@ class Dashboard(CoreDashboard, AuditMixinNullable, ImportExportMixin):
 
     @property
     def url(self) -> str:
-        return f"/superset/dashboard/{self.slug or self.id}/"
+        return Dashboard.get_url(self.id, self.slug)
 
     @staticmethod
     def get_url(id_: int, slug: str | None = None) -> str:
-        # To be able to generate URL's without instantiating a Dashboard object
-        return f"/superset/dashboard/{slug or id_}/"
+        # To be able to generate URL's without instantiating a Dashboard object.
+        # The "/superset" prefix is dropped when REMOVE_SUPERSET_URL_PREFIX is on.
+        prefix = "" if is_feature_enabled("REMOVE_SUPERSET_URL_PREFIX") else "/superset"
+        return f"{prefix}/dashboard/{slug or id_}/"
 
     @property
     def datasources(self) -> set[BaseDatasource]:

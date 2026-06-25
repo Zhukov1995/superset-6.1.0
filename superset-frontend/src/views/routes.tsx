@@ -25,6 +25,7 @@ import {
   LazyExoticComponent,
 } from 'react';
 import { isUserAdmin } from 'src/dashboard/util/permissionUtils';
+import { supersetPrefix } from 'src/utils/pathUtils';
 import getBootstrapData from 'src/utils/getBootstrapData';
 
 // not lazy loaded since this is the home page.
@@ -216,11 +217,11 @@ export const routes: Routes = [
     Component: Login,
   },
   {
-    path: '/superset/welcome/',
+    path: `${supersetPrefix()}/welcome/`,
     Component: Home,
   },
   {
-    path: '/superset/file-handler',
+    path: `${supersetPrefix()}/file-handler`,
     Component: FileHandler,
   },
   {
@@ -228,7 +229,7 @@ export const routes: Routes = [
     Component: DashboardList,
   },
   {
-    path: '/superset/dashboard/:idOrSlug/',
+    path: `${supersetPrefix()}/dashboard/:idOrSlug/`,
     Component: Dashboard,
   },
   {
@@ -298,7 +299,7 @@ export const routes: Routes = [
     Component: Chart,
   },
   {
-    path: '/superset/explore/p',
+    path: `${supersetPrefix()}/explore/p`,
     Component: Chart,
   },
   {
@@ -334,11 +335,11 @@ export const routes: Routes = [
 
 if (isFeatureEnabled(FeatureFlag.TaggingSystem)) {
   routes.push({
-    path: '/superset/all_entities/',
+    path: `${supersetPrefix()}/all_entities/`,
     Component: AllEntities,
   });
   routes.push({
-    path: '/superset/tags/',
+    path: `${supersetPrefix()}/tags/`,
     Component: Tags,
   });
 }

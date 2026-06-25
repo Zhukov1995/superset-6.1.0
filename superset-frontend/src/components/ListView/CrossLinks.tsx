@@ -20,6 +20,7 @@ import { memo, useMemo } from 'react';
 import { useTruncation } from '@superset-ui/core';
 import { styled } from '@apache-superset/core/theme';
 import { Link } from 'react-router-dom';
+import { supersetPrefix } from 'src/utils/pathUtils';
 import CrossLinksTooltip from './CrossLinksTooltip';
 
 export type CrossLinkProps = {
@@ -65,7 +66,7 @@ const StyledCrossLinks = styled.div`
 function CrossLinks({
   crossLinks,
   maxLinks = 20,
-  linkPrefix = '/superset/dashboard/',
+  linkPrefix = `${supersetPrefix()}/dashboard/`,
   external = false,
 }: CrossLinksProps) {
   const [crossLinksRef, plusRef, elementsTruncated, hasHiddenElements] =

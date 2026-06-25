@@ -58,6 +58,7 @@ export enum FeatureFlag {
   GlobalTaskFramework = 'GLOBAL_TASK_FRAMEWORK',
   ListviewsDefaultCardView = 'LISTVIEWS_DEFAULT_CARD_VIEW',
   Matrixify = 'MATRIXIFY',
+  RemoveSupersetUrlPrefix = 'REMOVE_SUPERSET_URL_PREFIX',
   ScheduledQueries = 'SCHEDULED_QUERIES',
   SqllabBackendPersistence = 'SQLLAB_BACKEND_PERSISTENCE',
   SqlValidatorsByEngine = 'SQL_VALIDATORS_BY_ENGINE',

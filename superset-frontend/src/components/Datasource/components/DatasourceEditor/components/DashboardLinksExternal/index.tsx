@@ -18,6 +18,7 @@
  */
 import { styled } from '@apache-superset/core/theme';
 import { GenericLink } from 'src/components';
+import { supersetPrefix } from 'src/utils/pathUtils';
 
 const DashboardLinksWrapper = styled.span`
   .truncated {
@@ -62,7 +63,7 @@ const DashboardLinksExternal = ({
         {dashboards.map((dashboard, index) => (
           <GenericLink
             key={dashboard.id}
-            to={`/superset/dashboard/${dashboard.id}/`}
+            to={`${supersetPrefix()}/dashboard/${dashboard.id}/`}
             target="_blank"
           >
             {index === 0

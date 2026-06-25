@@ -128,7 +128,11 @@ def FLASK_APP_MUTATOR(app):  # noqa: N802
         if not identifier:
             return None
         # Only intercept the welcome landing page for authenticated users.
-        if request.path.rstrip("/") != "/superset/welcome":
+        # Accept both the legacy "/superset/welcome" and the short "/welcome"
+        # path so this keeps working with REMOVE_SUPERSET_URL_PREFIX. The
+        # redirect target (dashboard.url) is built via url_for, so it is already
+        # short when the prefix is removed.
+        if request.path.rstrip("/") not in ("/superset/welcome", "/welcome"):
             return None
         if not getattr(g, "user", None) or g.user.is_anonymous:
             return None
@@ -146,7 +150,11 @@ def FLASK_APP_MUTATOR(app):  # noqa: N802
         return redirect(dashboard.url)
 
 
-FEATURE_FLAGS = {"ALERT_REPORTS": True, "DATASET_FOLDERS": True}
+FEATURE_FLAGS = {
+    "ALERT_REPORTS": True,
+    "DATASET_FOLDERS": True,
+    "REMOVE_SUPERSET_URL_PREFIX": True,
+}
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
 WEBDRIVER_BASEURL = f"http://superset_app{os.environ.get('SUPERSET_APP_ROOT', '/')}/"  # When using docker compose baseurl should be http://superset_nginx{ENV{BASEPATH}}/  # noqa: E501
 # The base URL for the email report hyperlinks.
