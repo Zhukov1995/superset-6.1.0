@@ -105,6 +105,47 @@ class CeleryConfig:
 
 CELERY_CONFIG = CeleryConfig
 
+# ---------------------------------------------------------------------------
+# Global welcome (landing) dashboard for every user, including new ones.
+#
+# Implemented entirely in config (no image/core.py changes) so it works the
+# same in dev and prod: just ship this config. A before_request hook
+# intercepts GET /superset/welcome/ and redirects to the configured dashboard.
+#
+# WELCOME_DASHBOARD accepts a dashboard numeric id or slug. Set to None to
+# disable. Note: each user still needs access to the dashboard (and its
+# datasets), otherwise they will get a 403/404 after the redirect.
+# ---------------------------------------------------------------------------
+WELCOME_DASHBOARD: int | str | None = "births"
+
+
+def FLASK_APP_MUTATOR(app):  # noqa: N802
+    from flask import g, redirect, request
+
+    @app.before_request
+    def _welcome_dashboard_redirect():  # noqa: ANN202
+        identifier = app.config.get("WELCOME_DASHBOARD")
+        if not identifier:
+            return None
+        # Only intercept the welcome landing page for authenticated users.
+        if request.path.rstrip("/") != "/superset/welcome":
+            return None
+        if not getattr(g, "user", None) or g.user.is_anonymous:
+            return None
+
+        from superset import db
+        from superset.models.dashboard import Dashboard
+
+        query = db.session.query(Dashboard)
+        if str(identifier).isdigit():
+            dashboard = query.filter(Dashboard.id == int(identifier)).one_or_none()
+        else:
+            dashboard = query.filter(Dashboard.slug == str(identifier)).one_or_none()
+        if dashboard is None:
+            return None
+        return redirect(dashboard.url)
+
+
 FEATURE_FLAGS = {"ALERT_REPORTS": True, "DATASET_FOLDERS": True}
 ALERT_REPORTS_NOTIFICATION_DRY_RUN = True
 WEBDRIVER_BASEURL = f"http://superset_app{os.environ.get('SUPERSET_APP_ROOT', '/')}/"  # When using docker compose baseurl should be http://superset_nginx{ENV{BASEPATH}}/  # noqa: E501
