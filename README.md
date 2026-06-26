@@ -17,6 +17,63 @@ specific language governing permissions and limitations
 under the License.
 -->
 
+# Superset 6.1.0 — кастомная сборка
+
+Этот форк Apache Superset 6.1.0 содержит:
+
+- драйвер **`clickhouse-connect`**, запечённый в Docker-образ (поддержка ClickHouse);
+- feature-флаг **`REMOVE_SUPERSET_URL_PREFIX`** — короткие URL без префикса `/superset/`
+  (`/dashboard/1` вместо `/superset/dashboard/1`), со 301/308-редиректами со старых адресов;
+- глобальный **welcome-дашборд** (`WELCOME_DASHBOARD`) — единая стартовая страница для всех
+  пользователей, включая новых.
+
+## Как собрать Docker-образ
+
+Production-образ собирается из исходников (таргет `lean`). Драйвер `clickhouse-connect`
+уже включён в `Dockerfile`; браузер для Alerts & Reports добавляется build-аргументом.
+
+```bash
+# Production-образ (фронтенд собирается внутри, + Chromium для отчётов/скриншотов)
+docker build \
+  --target lean \
+  --build-arg INCLUDE_CHROMIUM=true \
+  -t superset:6.1.0-prod \
+  .
+```
+
+> Первая сборка занимает десятки минут (webpack-сборка фронтенда + установка Chromium).
+
+Проверить, что зависимости на месте:
+
+```bash
+docker run --rm superset:6.1.0-prod python -c "import clickhouse_connect; print(clickhouse_connect.__version__)"
+```
+
+## Как запустить Superset
+
+Самый простой способ для локального/демо-запуска — Docker Compose (поднимает Superset,
+Postgres-метабазу, Redis и worker):
+
+```bash
+docker compose -f docker-compose-non-dev.yml up -d
+```
+
+Затем:
+
+- открыть **http://localhost:8088**
+- войти под **`admin` / `admin`** (смените пароль для любого реального окружения).
+
+Остановить: `docker compose -f docker-compose-non-dev.yml down`.
+
+Запуск собранного production-образа отдельно (нужны внешние Postgres и Redis;
+конфиг переопределяется через `superset_config.py` в `PYTHONPATH`):
+
+```bash
+docker run -d -p 8088:8088 \
+  -e SUPERSET_SECRET_KEY="<случайный-длинный-ключ>" \
+  --name superset superset:6.1.0-prod
+```
+
 # Superset
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/license/apache-2-0)
